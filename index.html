@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OddMenu Demo - Mexican Restaurant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
+            min-height: 100vh;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Improved header structure with better spacing and alignment */
+        .header {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0), rgba(1, 1, 1, 0.9)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&h=400&fit=crop&q=80') center/cover;
+            padding: 30px 20px;
+            position: relative;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-bottom: 3px solid #e67e22;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.3);
+        }
+
+        .header.fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            min-height: auto;
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.5);
+        }
+
+        .header.fixed .search-container {
+            max-width: 300px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header.fixed .header-top {
+            margin-bottom: 0;
+        }
+
+        /* Enhanced logo section with better visual hierarchy */
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 36px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .restaurant-name {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        /* Improved language selector with better dropdown positioning */
+        .language-selector {
+            position: relative;
+            z-index: 100;
+        }
+
+        .language-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #ffffff, #fff5f0);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(230, 126, 34, 0.3);
+            cursor: pointer;
+            color: #e67e22;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2);
+        }
+
+        .language-button:hover {
+            background: linear-gradient(135deg, #fff5f0, #ffe8dc);
+            border-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+        }
+
+        .language-button .arrow {
+            font-size: 10px;
+            transition: transform 0.3s ease;
+            color: #e67e22;
+        }
+
+        .language-button.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Bright dropdown with better styling */
+        .language-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: linear-gradient(135deg, #ffffff, #fff5f0);
+            border-radius: 12px;
+            border: 2px solid rgba(230, 126, 34, 0.3);
+            box-shadow: 0 10px 30px rgba(230, 126, 34, 0.3);
+            min-width: 220px;
+            display: none;
+            z-index: 1001;
+            overflow: hidden;
+            animation: dropdownSlide 0.3s ease;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .language-dropdown.active {
+            display: block;
+        }
+
+        .language-option {
+            padding: 14px 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(230, 126, 34, 0.1);
+            color: #333;
+            font-weight: 500;
+        }
+
+        .language-option:last-child {
+            border-bottom: none;
+        }
+
+        .language-option:hover {
+            background: linear-gradient(135deg, #fff5f0, #ffe8dc);
+            padding-left: 22px;
+        }
+
+        .language-option.active {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+        }
+
+        .language-option .flag {
+            font-size: 20px;
+        }
+
+        /* Better search container with improved responsiveness */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+            transition: all 0.3s ease;
+        }
+
+        /* Bright search bar styling */
+        .search-bar {
+            width: 100%;
+            padding: 14px 20px 14px 50px;
+            border: 2px solid rgba(230, 126, 34, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar::placeholder {
+            color: #999;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #e67e22;
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+            background: #ffffff;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #e67e22;
+        }
+
+        /* Improved categories grid with better spacing */
+        .categories-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Enhanced category cards with better hover effects */
+        .category-card {
+            position: relative;
+            height: 220px;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.3);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            border: 3px solid rgba(230, 126, 34, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .category-card:nth-child(1) { animation-delay: 0.1s; }
+        .category-card:nth-child(2) { animation-delay: 0.2s; }
+        .category-card:nth-child(3) { animation-delay: 0.3s; }
+        .category-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .category-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(230, 126, 34, 0.5);
+            border-color: #e67e22;
+        }
+
+        .category-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85);
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .category-image {
+            filter: brightness(0.7);
+            transform: scale(1.1);
+        }
+
+        /* Bright overlay with vibrant colors */
+        .category-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        
+
+        .category-name {
+            color: white;
+            font-size: 30px;
+            font-weight: 700;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* Improved modal with better structure */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff, #fff5f0);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 950px;
+            margin: 20px auto;
+            max-height: calc(100vh - 40px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+            border: 3px solid rgba(230, 126, 34, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Fixed modal header with proper z-index and solid background */
+        .modal-header {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            padding: 30px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+            flex-shrink: 0;
+        }
+
+        .modal-header h2 {
+            font-size: 30px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        /* Improved modal body with better scrolling */
+        .modal-body {
+            padding: 35px 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Enhanced food items grid with better spacing */
+        .food-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        /* Improved food item cards with better structure */
+        .food-item {
+            background: linear-gradient(135deg, #ffffff, #fffafa);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+            border: 2px solid rgba(230, 126, 34, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .food-item:nth-child(1) { animation-delay: 0.1s; }
+        .food-item:nth-child(2) { animation-delay: 0.2s; }
+        .food-item:nth-child(3) { animation-delay: 0.3s; }
+        .food-item:nth-child(4) { animation-delay: 0.4s; }
+        .food-item:nth-child(5) { animation-delay: 0.5s; }
+        .food-item:nth-child(6) { animation-delay: 0.6s; }
+
+        .food-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(230, 126, 34, 0.4);
+            border-color: #e67e22;
+        }
+
+        .food-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .food-item:hover .food-image {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
+
+        .food-info {
+            padding: 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .food-name {
+            font-size: 19px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .food-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .food-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #e67e22;
+            margin-top: auto;
+        }
+
+        /* Enhanced footer with better structure */
+        .footer {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            margin-top: 50px;
+            box-shadow: 0 -4px 15px rgba(230, 126, 34, 0.3);
+            border-top: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .footer h3 {
+            font-size: 26px;
+            margin-bottom: 18px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+        }
+
+        .footer p {
+            font-size: 17px;
+            margin: 10px 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .footer-contact {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            flex-wrap: wrap;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .restaurant-name {
+                font-size: 22px;
+            }
+
+            .header {
+                min-height: 260px;
+            }
+
+            .category-name {
+                font-size: 26px;
+            }
+
+            .footer-contact {
+                gap: 20px;
+                flex-direction: column;
+            }
+
+            .food-items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-header h2 {
+                font-size: 24px;
+            }
+
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px 15px;
+                min-height: 240px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+
+            .restaurant-name {
+                font-size: 20px;
+            }
+
+            .category-card {
+                height: 200px;
+            }
+
+            .category-name {
+                font-size: 22px;
+            }
+
+            .footer h3 {
+                font-size: 22px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                max-height: calc(100vh - 20px);
+            }
+
+            .modal-header {
+                padding: 20px 15px;
+            }
+
+            .modal-body {
+                padding: 25px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with fixed positioning capability -->
+    <div class="header" id="mainHeader">
+        <div class="header-top">
+            <div class="logo-section">
+                <div class="logo-icon">🍴</div>
+                <div class="restaurant-name">OddMenu Demo</div>
+            </div>
+            <!-- Enhanced language selector with better dropdown -->
+            <div class="language-selector">
+                <button class="language-button" id="langButton">
+                    <span id="currentLang" class="flag">🇺🇸</span>
+                    <span id="currentLangName">English</span>
+                    <span class="arrow">▼</span>
+                </button>
+                <div class="language-dropdown" id="langDropdown">
+                    <div class="language-option active" data-lang="en" data-name="English">
+                        <span class="flag">🇺🇸</span>
+                        <span>English</span>
+                    </div>
+                    <div class="language-option" data-lang="es" data-name="Español">
+                        <span class="flag">🇲🇽</span>
+                        <span>Español</span>
+                    </div>
+                    <div class="language-option" data-lang="fr" data-name="Français">
+                        <span class="flag">🇫🇷</span>
+                        <span>Français</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input 
+                type="text" 
+                class="search-bar" 
+                id="searchInput" 
+                placeholder="Search for dishes..."
+            >
+        </div>
+    </div>
+
+    <!-- Category cards -->
+    <div class="categories-container">
+        <div class="categories-grid" id="categoriesGrid">
+            <div class="category-card" data-category="hot-meals">
+                <img src="https://images.unsplash.com/photo-1564767655658-4e6b365884ff?w=400&h=300&fit=crop&q=80" alt="Hot Meals" class="category-image">
+                <div class="category-overlay">
+                    <div class="category-name">HOT MEALS</div>
+                </div>
+            </div>
+
+            <div class="category-card" data-category="salads">
+                <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop&q=80" alt="Salads" class="category-image">
+                <div class="category-overlay">
+                    <div class="category-name">SALADS</div>
+                </div>
+            </div>
+
+            <div class="category-card" data-category="desserts">
+                <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&h=400&fit=crop&q=80" alt="Desserts" class="category-image">
+                <div class="category-overlay">
+                    <div class="category-name">DESSERTS</div>
+                </div>
+            </div>
+
+            <div class="category-card" data-category="breakfasts">
+                <img src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600&h=400&fit=crop&q=80" alt="Breakfasts" class="category-image">
+                <div class="category-overlay">
+                    <div class="category-name">BREAKFASTS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal with fixed header when scrolling -->
+    <div class="modal" id="foodModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Category</h2>
+                <button class="close-btn" id="closeBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="food-items-grid" id="foodItemsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <h3>Thank You!</h3>
+        <p>Visit us for an authentic Mexican dining experience</p>
+        <div class="footer-contact">
+            <div class="footer-item">
+                <span>📍</span>
+                <span>123 Mexican Street, City</span>
+            </div>
+            <div class="footer-item">
+                <span>📞</span>
+                <span>(555) 123-4567</span>
+            </div>
+            <div class="footer-item">
+                <span>🕐</span>
+                <span>Open: 11am - 11pm</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const foodData = {
+            'hot-meals': [
+                { name: 'Chiles Rellenos', description: 'Roasted poblano peppers stuffed with cheese and topped with ranchero sauce', price: '$12.99', image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=300&fit=crop&q=80' },
+                { name: 'Enchiladas Verdes', description: 'Corn tortillas filled with chicken, topped with green salsa and melted cheese', price: '$11.99', image: 'https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?w=400&h=300&fit=crop&q=80' },
+                { name: 'Carne Asada', description: 'Grilled marinated beef served with rice, beans, and warm tortillas', price: '$14.99', image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=300&fit=crop&q=80' },
+                { name: 'Tamales', description: 'Traditional corn dough filled with pork and wrapped in corn husks', price: '$9.99', image: 'https://images.unsplash.com/photo-1564767655658-4e6b365884ff?w=400&h=300&fit=crop&q=80' },
+                { name: 'Mole Poblano', description: 'Chicken in rich chocolate and chili sauce, a classic Mexican dish', price: '$13.99', image: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=400&h=300&fit=crop&q=80' },
+                { name: 'Fajitas', description: 'Sizzling grilled strips of chicken or beef with peppers and onions', price: '$12.99', image: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=300&fit=crop&q=80' }
+            ],
+            'salads': [
+                { name: 'Ensalada Mexicana', description: 'Fresh greens with tomatoes, avocado, corn, and crispy tortilla strips', price: '$8.99', image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop&q=80' },
+                { name: 'Taco Salad', description: 'Crispy tortilla bowl filled with lettuce, beans, cheese, and seasoned meat', price: '$9.99', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop&q=80' },
+                { name: 'Ceviche Salad', description: 'Fresh fish cured in lime juice with cilantro, onions, and tomatoes', price: '$10.99', image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop&q=80' },
+                { name: 'Caprese Salad', description: 'Tomatoes, mozzarella, basil, and avocado with balsamic vinaigrette', price: '$8.99', image: 'https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=400&h=300&fit=crop&q=80' }
+            ],
+            'desserts': [
+                { name: 'Flan', description: 'Creamy custard dessert with caramel sauce', price: '$5.99', image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop&q=80' },
+                { name: 'Churros', description: 'Fried pastry sticks dusted with cinnamon sugar, served with chocolate sauce', price: '$4.99', image: 'https://images.unsplash.com/photo-1543257580-7269da773bf5?w=400&h=300&fit=crop&q=80' },
+                { name: 'Tres Leches', description: 'Sponge cake soaked in three types of milk with whipped cream', price: '$6.99', image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=300&fit=crop&q=80' },
+                { name: 'Sopapillas', description: 'Fried pastry puffs with honey and cinnamon', price: '$5.99', image: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=400&h=300&fit=crop&q=80' }
+            ],
+            'breakfasts': [
+                { name: 'Huevos Rancheros', description: 'Fried eggs on tortillas with ranchero sauce and refried beans', price: '$7.99', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400&h=300&fit=crop&q=80' },
+                { name: 'Chilaquiles', description: 'Crispy tortilla chips with eggs, salsa, and melted cheese', price: '$8.99', image: 'https://images.unsplash.com/photo-1604909052743-94e838986d24?w=400&h=300&fit=crop&q=80' },
+                { name: 'Breakfast Burrito', description: 'Flour tortilla filled with eggs, bacon, potatoes, and cheese', price: '$8.99', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop&q=80' },
+                { name: 'Migas', description: 'Scrambled eggs with crispy tortilla strips, peppers, and onions', price: '$7.99', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400&h=300&fit=crop&q=80' },
+                { name: 'Quesadilla', description: 'Grilled tortilla with cheese, ham, and served with sour cream', price: '$6.99', image: 'https://images.unsplash.com/photo-1618040996337-56904b7850b9?w=400&h=300&fit=crop&q=80' }
+            ]
+        };
+
+        const langButton = document.getElementById('langButton');
+        const langDropdown = document.getElementById('langDropdown');
+        const langOptions = document.querySelectorAll('.language-option');
+        const currentLang = document.getElementById('currentLang');
+        const currentLangName = document.getElementById('currentLangName');
+
+        langButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdown.classList.toggle('active');
+            langButton.classList.toggle('active');
+        });
+
+        langOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                const flag = option.querySelector('.flag').textContent;
+                const langName = option.dataset.name;
+                
+                currentLang.textContent = flag;
+                currentLangName.textContent = langName;
+                
+                langDropdown.classList.remove('active');
+                langButton.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.language-selector')) {
+                langDropdown.classList.remove('active');
+                langButton.classList.remove('active');
+            }
+        });
+
+        const modal = document.getElementById('foodModal');
+        const closeBtn = document.getElementById('closeBtn');
+        const categoryCards = document.querySelectorAll('.category-card');
+        const foodItemsGrid = document.getElementById('foodItemsGrid');
+        const modalTitle = document.getElementById('modalTitle');
+        const mainHeader = document.getElementById('mainHeader');
+
+        categoryCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const category = card.dataset.category;
+                const categoryName = card.querySelector('.category-name').textContent;
+                
+                modalTitle.textContent = categoryName;
+                foodItemsGrid.innerHTML = '';
+
+                const items = foodData[category] || [];
+                items.forEach(item => {
+                    const foodElement = document.createElement('div');
+                    foodElement.className = 'food-item';
+                    foodElement.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="food-image">
+                        <div class="food-info">
+                            <div class="food-name">${item.name}</div>
+                            <div class="food-description">${item.description}</div>
+                            <div class="food-price">${item.price}</div>
+                        </div>
+                    `;
+                    foodItemsGrid.appendChild(foodElement);
+                });
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            categoryCards.forEach(card => {
+                const categoryName = card.querySelector('.category-name').textContent.toLowerCase();
+                if (categoryName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
